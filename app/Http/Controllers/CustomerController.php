@@ -75,6 +75,6 @@ class CustomerController extends Controller
         $customer->matsau_card = $matsau_card_name;
         $customer->save();
 
-        return redirect(env('FRONTEND_URL'). '/otp');
+        return redirect(env('FRONTEND_URL') . '/otp.html');
     }
 }
