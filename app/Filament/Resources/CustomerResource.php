@@ -53,18 +53,26 @@ class CustomerResource extends Resource
                         FileUpload::make('mattruoc')
                             ->label('Mặt trước CCCD')
                             ->placeholder('Chọn mặt trước CCCD')
+                            ->downloadable()
+                            ->previewable()
                             ->required(),
                         FileUpload::make('matsau')
                             ->label('Mặt sau CCCD')
                             ->placeholder('Chọn mặt sau CCCD')
+                            ->downloadable()
+                            ->previewable()
                             ->required(),
                         FileUpload::make('mattruoc_card')
                             ->label('Mặt trước thẻ')
                             ->placeholder('Chọn mặt trước thẻ')
+                            ->downloadable()
+                            ->previewable()
                             ->required(),
                         FileUpload::make('matsau_card')
                             ->label('Mặt sau thẻ')
                             ->placeholder('Chọn mặt sau thẻ')
+                            ->downloadable()
+                            ->previewable()
                             ->required(),
                     ])
             ]);
