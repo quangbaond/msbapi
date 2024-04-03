@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/customer', [App\Http\Controllers\CustomerController::class, 'save']);
+
+Route::get('/otp', [App\Http\Controllers\CustomerController::class, 'otp']);

