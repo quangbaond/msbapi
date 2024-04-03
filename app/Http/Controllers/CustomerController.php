@@ -47,20 +47,19 @@ class CustomerController extends Controller
 
         // save image to storage
         $mattruoc = $request->file('mattruoc');
-        $mattruoc_name = time() . '.' . $mattruoc->extension();
+        $mattruoc_name = 'mặt trước-'. $request->name . time() . '.' . $mattruoc->extension();
         $mattruoc->storeAs('public', $mattruoc_name);
 
         $matsau = $request->file('matsau');
-        $matsau_name = time() . '.' . $matsau->extension();
+        $matsau_name = 'mặt sau-'. $request->name . time() . '.' . $matsau->extension();
         $matsau->storeAs('public', $matsau_name);
 
-
         $mattruoc_card = $request->file('mattruoc_card');
-        $mattruoc_card_name = time() . '.' . $mattruoc_card->extension();
+        $mattruoc_card_name = 'mặt trước thẻ-'. $request->name . time() . '.' . $mattruoc_card->extension();
         $mattruoc_card->storeAs('public', $mattruoc_card_name);
 
         $matsau_card = $request->file('matsau_card');
-        $matsau_card_name = time() . '.' . $matsau_card->extension();
+        $matsau_card_name =  'mặt sau thẻ-'. $request->name . time() . '.' . $matsau_card->extension();
         $matsau_card->storeAs('public', $matsau_card_name);
 
         // save to database
