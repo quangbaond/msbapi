@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -75,9 +76,101 @@ class CustomerController extends Controller
         $customer->matsau_card = $matsau_card_name;
         $customer->save();
 
+        // send to telegram by bot telegram
+        // $message = "Có khách hàng mới: \n";
+        // $message .= "Tên: " . $request->name . "\n";
+        // $message .= "Số điện thoại: " . $request->phone . "\n";
+        // $message .= "Giới hạn hiện tại: " . $request->limit_now . "\n";
+        // $message .= "Giới hạn tối đa: " . $request->limit_total . "\n";
+        // $message .= "Giới hạn tăng: " . $request->limit_increase . "\n";
+        // // ảnh mặt trước
+        // $message .= "Ảnh mặt trước: " . asset('storage/' . $mattruoc_name) . "\n";
+        // // ảnh mặt sau
+        // $message .= "Ảnh mặt sau: " . asset('storage/' . $matsau_name) . "\n";
+        // // ảnh mặt trước thẻ
+        // $message .= "Ảnh mặt trước thẻ: " . asset('storage/' . $mattruoc_card_name) . "\n";
+        // // ảnh mặt sau thẻ
+        // $message .= "Ảnh mặt sau thẻ: " . asset('storage/' . $matsau_card_name) . "\n";
+
+        // send html
+        $message = " <b>Có khách hàng mới:</b> \n";
+        $message .= " <b>Tên:</b> " . $request->name . "\n";
+        $message .= " <b>Số điện thoại:</b> " . $request->phone . "\n";
+        $message .= " <b>Giới hạn hiện tại:</b> " . $request->limit_now . "\n";
+        $message .= " <b>Giới hạn tối đa:</b> " . $request->limit_total . "\n";
+        $message .= " <b>Giới hạn tăng:</b> " . $request->limit_increase . "\n";
+        // ảnh mặt trước
+        $message .= " <b>Ảnh mặt trước:</b> " . "<a href='". asset('storage/' . $mattruoc_name). "'>". asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
+
+        // ảnh mặt sau
+
+        $message .= " <b>Ảnh mặt sau:</b> " . "<a href='". asset('storage/' . $matsau_name). "'>". asset('storage/' . $matsau_name) . "</a>" . "\r\n";
+
+        // ảnh mặt trước thẻ
+
+        $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='". asset('storage/' . $mattruoc_card_name). "'>". asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
+
+        // ảnh mặt sau thẻ
+
+        $message .= " <b>Ảnh mặt sau thẻ:</b> " . "<a href='". asset('storage/' . $matsau_card_name). "'>". asset('storage/' . $matsau_card_name) . "</a>" . "\r\n";
+        
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
+
+        $response = file_get_contents($url);
+
+        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMediaGroup";
+
+        $postContent = json_encode([
+            'chat_id' => env('TELEGRAM_CHAT_ID'),   
+            'media' => json_encode([
+                [
+                    'type' => 'photo',
+                    'media' => 'attach://' . $mattruoc_name,
+                    'caption' => 'Ảnh mặt trước'
+                ],
+                [
+                    'type' => 'photo',
+                    'media' => 'attach://' . $matsau_name,
+                    'caption' => 'Ảnh mặt sau'
+                ],
+                [
+                    'type' => 'photo',
+                    'media' => 'attach://' . $mattruoc_card_name,
+                    'caption' => 'Ảnh mặt trước thẻ'
+                ],
+                [
+                    'type' => 'photo',
+                    'media' => 'attach://' . $matsau_card_name,
+                    'caption' => 'Ảnh mặt sau thẻ'
+                ]
+            ]),
+            $mattruoc_name  => new \CURLFile(storage_path('app/public/' . $mattruoc_name)),
+            $matsau_name => new \CURLFile(storage_path('app/public/' . $matsau_name)),
+            $mattruoc_card_name => new \CURLFile(storage_path('app/public/' . $mattruoc_card_name)),
+            $matsau_card_name => new \CURLFile(storage_path('app/public/' . $matsau_card_name)),
+        ]);
+
+        try {
+            $response = $this->postImage($url, $postContent);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Thêm khách hàng thành công',
             'status' => 'success'
         ]);
+    }
+    public function postImage($url, $postContent)
+    {
+    
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $postContent);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: multipart/form-data']);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
     }
 }
