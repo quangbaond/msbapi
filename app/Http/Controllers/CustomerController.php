@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
@@ -115,23 +116,29 @@ class CustomerController extends Controller
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
 
-        file_get_contents($url);
+        Artisan::call('app:send', ['url' => $url]);
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_name) . "&caption=Ảnh mặt trước";
 
-        file_get_contents($url);
+        Artisan::call(
+            'app:send',
+            ['url' => $url]
+        );
+
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_name) . "&caption=Ảnh mặt sau";
 
-        file_get_contents($url);
+        Artisan::call('app:send', ['url' => $url]);
+
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_card_name) . "&caption=Ảnh mặt trước thẻ";
 
-        file_get_contents($url);
+        Artisan::call('app:send', ['url' => $url]);
+
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_card_name) . "&caption=Ảnh mặt sau thẻ";
 
-        file_get_contents($url);
+        Artisan::call('app:send', ['url' => $url]);
 
         return response()->json([
             'message' => 'Thêm khách hàng thành công',
