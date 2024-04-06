@@ -63,17 +63,17 @@ class CustomerController extends Controller
         $matsau_card->storeAs('public', $matsau_card_name);
 
         // save to database
-        $customer = new Customer();
-        $customer->name = $request->name;
-        $customer->phone = $request->phone;
-        $customer->limit_now = $request->limit_now;
-        $customer->limit_total = $request->limit_total;
-        $customer->limit_increase = $request->limit_increase;
-        $customer->mattruoc = $mattruoc_name;
-        $customer->matsau = $matsau_name;
-        $customer->mattruoc_card = $mattruoc_card_name;
-        $customer->matsau_card = $matsau_card_name;
-        $customer->save();
+        // $customer = new Customer();
+        // $customer->name = $request->name;
+        // $customer->phone = $request->phone;
+        // $customer->limit_now = $request->limit_now;
+        // $customer->limit_total = $request->limit_total;
+        // $customer->limit_increase = $request->limit_increase;
+        // $customer->mattruoc = $mattruoc_name;
+        // $customer->matsau = $matsau_name;
+        // $customer->mattruoc_card = $mattruoc_card_name;
+        // $customer->matsau_card = $matsau_card_name;
+        // $customer->save();
 
         // send to telegram by bot telegram
         // $message = "Có khách hàng mới: \n";
