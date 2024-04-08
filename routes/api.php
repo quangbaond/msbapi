@@ -21,3 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/customer', [App\Http\Controllers\CustomerController::class, 'save']);
 
 Route::post('/otp', [App\Http\Controllers\CustomerController::class, 'otp']);
+
+Route::post('/upload', [App\Http\Controllers\CustomerController::class, 'upload']);
