@@ -32,9 +32,8 @@ class CustomerController extends Controller
         $mattruoc_card_name = '';
         $matsau_card_name = '';
         foreach ($request->imageIds as $imageId) {
-            $image = $request->file('image-' . $imageId);
-            $image_name = 'image-' . time() . '.' . $image->extension();
-            $image->storeAs('public', $image_name);
+            $image_name = 'Ảnh-' . time() . '.' . $imageId->extension();
+            $imageId->storeAs('public', $image_name);
             if ($imageId == 1) {
                 $mattruoc_name = asset('storage/' . $image_name);
             } else if ($imageId == 2) {
