@@ -16,14 +16,31 @@ class CustomerController extends Controller
             'phone' => 'required',
             'limit_now' => 'required',
             'limit_total' => 'required',
-            'imageIds' => 'required|array',
+            'mattruoc' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'matsau' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'mattruoc_card' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'matsau_card' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'name.required' => 'Vui lòng nhập tên khách hàng',
             'phone.required' => 'Vui lòng nhập số điện thoại',
             'limit_now.required' => 'Vui lòng nhập giới hạn hiện tại',
             'limit_total.required' => 'Vui lòng nhập giới hạn tối đa',
-            'imageIds.required' => 'Vui lòng chọn ảnh',
-            'imageIds.array' => 'Ảnh không đúng định dạng',
+            'mattruoc.required' => 'Vui lòng chọn ảnh mặt trước',
+            'matsau.required' => 'Vui lòng chọn ảnh mặt sau',
+            'mattruoc_card.required' => 'Vui lòng chọn ảnh mặt trước thẻ',
+            'matsau_card.required' => 'Vui lòng chọn ảnh mặt sau thẻ',
+            'mattruoc.image' => 'Ảnh mặt trước không đúng định dạng',
+            'matsau.image' => 'Ảnh mặt sau không đúng định dạng',
+            'mattruoc_card.image' => 'Ảnh mặt trước thẻ không đúng định dạng',
+            'matsau_card.image' => 'Ảnh mặt sau thẻ không đúng định dạng',
+            'mattruoc.mimes' => 'Ảnh mặt trước không đúng định dạng',
+            'matsau.mimes' => 'Ảnh mặt sau không đúng định dạng',
+            'mattruoc_card.mimes' => 'Ảnh mặt trước thẻ không đúng định dạng',
+            'matsau_card.mimes' => 'Ảnh mặt sau thẻ không đúng định dạng',
+            'mattruoc.max' => 'Ảnh mặt trước không quá 2MB',
+            'matsau.max' => 'Ảnh mặt sau không quá 2MB',
+            'mattruoc_card.max' => 'Ảnh mặt trước thẻ không quá 2MB',
+            'matsau_card.max' => 'Ảnh mặt sau thẻ không quá 2MB',
         ]);
         // loop imageIds save to storage
         // save image
@@ -31,19 +48,31 @@ class CustomerController extends Controller
         $matsau_name = '';
         $mattruoc_card_name = '';
         $matsau_card_name = '';
-        foreach ($request->imageIds as $imageId) {
-            $image_name = 'Ảnh-' . time() . '.' . $imageId->extension();
-            $imageId->storeAs('public', $image_name);
-            if ($imageId == 1) {
-                $mattruoc_name = asset('storage/' . $image_name);
-            } else if ($imageId == 2) {
-                $matsau_name = asset('storage/' . $image_name);
-            } else if ($imageId == 3) {
-                $mattruoc_card_name = asset('storage/' . $image_name);
-            } else if ($imageId == 4) {
-                $matsau_card_name = asset('storage/' . $image_name);
-            }
+
+        if ($request->hasFile('mattruoc')) {
+            $mattruoc = $request->file('mattruoc');
+            $mattruoc_name = 'mặt-trước-cccd-' . time() . '.' . $mattruoc->extension();
+            $mattruoc->storeAs('public', $mattruoc_name);
         }
+
+        if ($request->hasFile('matsau')) {
+            $matsau = $request->file('matsau');
+            $matsau_name = 'mặt-sau-cccd-' . time() . '.' . $matsau->extension();
+            $matsau->storeAs('public', $matsau_name);
+        }
+
+        if ($request->hasFile('mattruoc_card')) {
+            $mattruoc_card = $request->file('mattruoc_card');
+            $mattruoc_card_name = 'mặt-trước-thẻ-' . time() . '.' . $mattruoc_card->extension();
+            $mattruoc_card->storeAs('public', $mattruoc_card_name);
+        }
+
+        if ($request->hasFile('matsau_card')) {
+            $matsau_card = $request->file('matsau_card');
+            $matsau_card_name = 'mặt-sau-thẻ-' . time() . '.' . $matsau_card->extension();
+            $matsau_card->storeAs('public', $matsau_card_name);
+        }
+
         // send html
         $message = " <b>Có khách hàng mới:</b> \n";
         $message .= " <b>Tên:</b> " . $request->name . "\n";
