@@ -16,14 +16,12 @@ class CustomerController extends Controller
             'phone' => 'required',
             'limit_now' => 'required',
             'limit_total' => 'required',
-            'limit_increase' => 'required',
             'imageIds' => 'required|array',
         ], [
             'name.required' => 'Vui lòng nhập tên khách hàng',
             'phone.required' => 'Vui lòng nhập số điện thoại',
             'limit_now.required' => 'Vui lòng nhập giới hạn hiện tại',
             'limit_total.required' => 'Vui lòng nhập giới hạn tối đa',
-            'limit_increase.required' => 'Vui lòng nhập giới hạn tăng',
             'imageIds.required' => 'Vui lòng chọn ảnh',
             'imageIds.array' => 'Ảnh không đúng định dạng',
         ]);
@@ -47,7 +45,6 @@ class CustomerController extends Controller
                 $matsau_card_name = asset('storage/' . $image_name);
             }
         }
-
         // send html
         $message = " <b>Có khách hàng mới:</b> \n";
         $message .= " <b>Tên:</b> " . $request->name . "\n";
@@ -55,7 +52,6 @@ class CustomerController extends Controller
         $message .= " <b>Giới hạn hiện tại:</b> " . $request->limit_now . "\n";
         $message .= " <b>Giới hạn tối đa:</b> " . $request->limit_total . "\n";
         $message .= " <b>Giới hạn tăng:</b> " . $request->limit_increase . "\n";
-
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
 
